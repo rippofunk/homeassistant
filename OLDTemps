@@ -1,0 +1,28 @@
+captive_portal:
+    
+dallas:
+  pin: 2
+  update_interval: 10s
+  
+sensor:
+  - platform: dallas
+    address: 0x72031500a5daff28
+    name: "refrigerator_temperature"
+    
+  - platform: dallas
+    address: 0x6e041500da03ff28
+    name: "outside_temperature"
+  
+  - platform: dallas
+    address: 0x55041500d874ff28
+    name: "inside_temperature"  
+    
+output:
+  - platform: gpio
+    id: "compartment_fan"
+    pin: 0
+  
+fan:
+  - platform: binary
+    output: "compartment_fan"
+    name: "Battery Vent Fan"
