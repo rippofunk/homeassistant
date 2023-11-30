@@ -1,0 +1,92 @@
+.....
+captive_portal:
+
+dallas:
+  pin: 
+    number: D3
+    mode: INPUT_PULLUP
+  update_interval: 10s
+
+switch:
+  - platform: gpio
+    pin: D0
+    name: "heater 2"
+    id: heater2
+
+  - platform: gpio
+    pin: D5
+    name: "heater 1"
+    id: heater1
+
+
+output:
+  - platform: esp8266_pwm
+    pin: 
+      number: D1
+    id: heater_fan1
+    frequency: 100 Hz
+    min_power: 0.04
+    zero_means_zero: true
+fan:
+  - platform: speed
+    output: heater_fan1
+    name: "heater Fan"
+
+sensor:
+  - platform: dallas
+    address: 0x653ce1d443682828
+    name: "Battery Ambient"
+    id: bambient
+    on_value:
+        then:
+          - lambda: |-
+              if ((id(bambient).state < 13) and (id(heatpad1).state < 38)) {
+                id(heater1).turn_on();
+                ESP_LOGD("heater","HP1 ON Amb and HP1 agree");}
+              if ((id(bambient).state < 13) and (id(heatpad2).state < 38)) {
+                id(heater2).turn_on();
+                ESP_LOGD("heater","HP2 ON Amb and HP2 agree");}
+              if(id(bambient).state > 15) {
+                id(heater1).turn_off();
+                id(heater2).turn_off();
+                ESP_LOGD("heater","AMB says off");}
+              else if (id(heatpad1).state > id(bambient).state + 5 ) {
+                id(heater_fan1).turn_on(); 
+                ESP_LOGD("heatfan","FAN ON");} 
+              else if(id(heatpad1).state < id(bambient).state + 4 ) {
+                id(heater_fan1).turn_off();
+                ESP_LOGD("heatfan","FAN OFF");}
+              
+  - platform: dallas
+    address: 0xf33ce1d44379b128
+    name: "Heater Pad 1"
+    id: heatpad1
+    on_value:
+      then:
+        - lambda: |-
+            if ((id(bambient).state < 13) and (id(heatpad1).state < 38)) {
+              id(heater1).turn_on();
+              ESP_LOGD("heater","HP1 ON Amb and HP1 agree D1");}
+            else if((id(bambient).state > 15) or (id(heatpad1).state > 38)) {
+              id(heater1).turn_off();
+              ESP_LOGD("heater","HP1 OFF Amb or HP1 D1");}
+
+  - platform: dallas
+    address: 0xb33ce1d44385f728
+    name: "Heater Pad 2"
+    id: heatpad2
+    on_value:
+      then:
+        - lambda: |-
+            if ((id(bambient).state < 13) and (id(heatpad2).state < 38)) {
+              id(heater2).turn_on();
+              ESP_LOGD("heater","HP2 ON Amb and HP2 agree D1");}
+            else if((id(bambient).state > 15) or (id(heatpad2).state > 38)) {
+              id(heater2).turn_off();
+              ESP_LOGD("heater","HP2 OFF Amb or HP1 D2");}
+
+
+
+# else{id(heater1).turn_off();
+# ESP_LOGD("heater","HP1 OFF end");}
+# bambient should be 15, 24 is just for home testing 
