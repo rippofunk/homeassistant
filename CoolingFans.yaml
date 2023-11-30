@@ -1,0 +1,76 @@
+.......
+
+captive_portal:
+    
+  
+output:
+  - platform: esp8266_pwm
+    pin: 
+      number: GPIO15
+    id: cooling_fan1
+    frequency: 25 Hz
+    #min_power: 0.04
+    zero_means_zero: true
+
+  - platform: esp8266_pwm
+    pin: 
+      number: GPIO13
+    id: cooling_fan2
+    frequency: 25 Hz
+    #min_power: 0.04
+    zero_means_zero: true
+
+fan:
+  - platform: speed
+    output: cooling_fan1
+    name: "Exhaust Fan"
+    id: exhaust_fan
+  - platform: speed
+    output: cooling_fan2
+    name: "Circulation Fan"
+    id: circulation_fan
+
+        
+dallas:
+  pin: GPIO5
+  update_interval: 10s
+  
+sensor:
+  - platform: dallas
+    address: 0x72031500a5daff28
+    name: "refrigerator_temp"
+    id: refrigerator_temp
+    
+  - platform: dallas
+    address: 0x6e041500da03ff28
+    name: "outside_temp"
+    id: outside_temp
+
+  - platform: dallas
+    address: 0x55041500d874ff28
+    name: "inside_temp"  
+    id: inside_temp  
+
+  - platform: dallas
+    address: 0x493ce1d443975428
+    name: "back_battery_temp"  
+    id: back_battery_temp
+    on_value_range:
+        - below: '31'
+          then:
+            - fan.turn_off: exhaust_fan
+        - above: '33'
+          then:
+            - fan.turn_on: exhaust_fan
+
+  - platform: dallas
+    address: 0x983ce1d443427128
+    name: "front_battery_temp"  
+    id: front_battery_temp
+    on_value_range:
+        - below: '31'
+          then:
+            - fan.turn_off: circulation_fan
+        - above: '33'
+          then:
+            - fan.turn_on: circulation_fan
