@@ -1,0 +1,43 @@
+.......
+
+captive_portal:
+    
+
+switch:
+  - platform: gpio
+    pin: GPIO14
+    name: "switch1"
+    id: switch1
+    on_turn_on:
+    - delay: 100ms
+    - switch.turn_off: switch1
+
+  - platform: gpio
+    pin: GPIO13
+    name: "switch2"
+    id: switch2
+    on_turn_on:
+    - delay: 100ms
+    - switch.turn_off: switch2
+
+  - platform: gpio
+    pin: GPIO12
+    name: "switch3"
+    id: switch3
+    on_turn_on:
+    - delay: 100ms
+    - switch.turn_off: switch3
+
+binary_sensor:
+  - platform: gpio
+    pin: 
+      number: GPIO5
+      mode:
+        input: true
+    name: "Direction 1"
+  - platform: gpio
+    pin: 
+      number: GPIO4
+      mode:
+        input: true
+    name: "Direction 2"
