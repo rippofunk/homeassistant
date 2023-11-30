@@ -1,0 +1,13 @@
+.....
+
+captive_portal:
+
+
+switch:
+  - platform: gpio
+    pin: 2
+    name: "Thermostat"
+
+  - platform: gpio
+    pin: 0
+    name: "Thermostat Override"
